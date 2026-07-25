@@ -1,0 +1,61 @@
+# FpML Wiki Chronological Event Log
+
+This is an append-only event log tracking all Ingest, Query compounding, and Lint operations performed on the Wiki.
+
+## [2026-07-25] query | Compounded NDS mid-life fixing cashflows & event modeling guidelines
+- Analyzed FpML 5.12 Confirmation View XSD schemas and sample XMLs for NDS / NDF mid-life fixing representation.
+- Documented schema constraints (`PaymentCalculationPeriod` vs `settlementProvision/nonDeliverableSettlement`).
+- Formulated 4 implementation approaches: `forecastPaymentAmount` (Trade state), Vendor extension (`ext:fxFixing`), Business Events (`reset` / `observation`), and `TradeChangeAdvice` (`TradeChangeContent` with `versionedTradeId`).
+- Created `wiki/products/nds-cashflows-and-fixing.md` and updated `wiki/products/ird.md`, `wiki/index.md`.
+
+## [2026-07-25] lint | Standardized OTC derivative market terminology across all Wiki pages
+- Standardized `Leg` to 「レグ (Leg)」 (replaced literal translation 「脚」 in `xccy-swap.md`, `pricing-and-confirmation-flow.md`, `index.md`).
+- Standardized `Confirmation` to 「コンファーメーション (Confirmation)」 (replaced 「コンフィメーション」 in `business-processes.md`, `overview.md`, `root-elements.md`).
+- Standardized `Novation` to 「ノベーション (Novation / 契約更改)」 (replaced literal translation 「契約改済」 in `business-processes.md`).
+- Standardized `Discrepancy` to 「相違 (Discrepancy) / アンマッチ」.
+
+## [2026-07-25] query | Compound Back: Refactored Wiki to correctly distribute Product, Process, and Architecture domain knowledge
+- Created `wiki/products/xccy-swap.md`: Deep product structure for USD/JPY SOFR vs TONA Cross-Currency Basis Swap (2-leg `swapStream`, `principalExchanges`, RFR Compounding).
+- Created `wiki/processes/pricing-and-confirmation-flow.md`: In-depth front-office business process flow (NPV=0 Par Pricing Solver, Sales/Dealer Margin adjustment, RFQ, Execution, Trade Capture, Confirmation Matching, Rate Fixing).
+- Refactored `wiki/architecture/pricing-bounded-contexts.md`: Re-defined Pricing & Risk Analytics BC around Par Swap NPV=0 Solver and Greeks simulation; linked to products and processes.
+- Updated `wiki/index.md` to cleanly categorize all 3 new/refactored files.
+
+## [2026-07-25] query | Compound Back: Added Front-Office Pricing & Confirmation Bounded Contexts page
+- Synthesized query analysis of FpML 5.12 reference model for USD/JPY SOFR/TONA XCCY Basis Swaps.
+- Documented 5 Bounded Contexts (Booking, Market Data, Pricing & Risk, Confirmation, Rate Observation).
+- Linked DDD microservice architecture with the 8 core microservice values.
+- Created `wiki/architecture/pricing-bounded-contexts.md` and updated `wiki/index.md`.
+
+## [2026-07-25] ingest | Initial setup of FpML 5.12 Wiki base structure
+- Initialized LLM Wiki pattern framework (Raw sources, Wiki, Schema protocol).
+- Added `docs/agents/wiki.md` protocol and linked from `AGENTS.md`.
+- Created main index `wiki/index.md` and initial domain pages: `overview.md`, `common/shared-foundation.md`, `products/ird.md`, `products/fx.md`, `products/credit.md`, `products/equity.md`, and `processes/business-processes.md`.
+
+## [2026-07-25] lint | Fixed market terminology across Agent rules & Wiki pages
+- Corrected "誘導体" to "デリバティブ" across all documentation.
+- Corrected "先渡金利協定" to "FRA" / "金利先渡取引".
+- Corrected "固定脚・変動脚" to "固定レグ・変動レグ".
+- Generalized terminology guideline principles in `AGENTS.md` and `docs/agents/wiki.md`.
+
+## [2026-07-25] lint | Comprehensive Japanese OTC derivative market terminology review across all Wiki pages
+- Reviewed all Markdown files under `wiki/` against standard Japanese OTC market terminology.
+- `wiki/processes/business-processes.md`: Fixed typo `termation` -> `termination` (中途解約). Standardized `Clearing` (中央清算/CCP), `Confirmation` (コンフィメーション / 約定確認), `Novation` (ノベーション / 契約改済).
+- `wiki/overview.md`: Refined ISDA (国際スワップ・デリバティブ協会), Confirmation (コンフィメーション・ビュー).
+- `wiki/common/shared-foundation.md`: Standardized `Party` (取引当事者 / カウンターパーティ), `BusinessDayAdjustments` (営業日調整コンベンション・休業日都市).
+- `wiki/products/fx.md`: Standardized FX Spot (直物), FX Forward (先物), Accruals (アクルーアル), Value Date (受渡日/決済日).
+- `wiki/products/ird.md`: Standardized Floating Rate Index (参照金利指標: SOFR, EURIBOR, TONA, TORF), Stub Period (スタブ期 / 変則計算期間).
+- `wiki/products/credit.md`: Standardized Reference Entity (参照体 / 参照企業), Protection Terms / Credit Events (プロテクション条件・信用事由), Deliverable Obligation (現物決済対象債務要件).
+- `wiki/products/equity.md`: Standardized Extraordinary Events (特別事象: 組織再編・合併、株式分割、上場廃止等), Strike (権利行使価格 / ストライク).
+
+## [2026-07-25] query | Compounded FpML 5.12 Confirmation View XML Document Root Elements Analysis
+- Analyzed XSD schemas in `confirmation/` (`fpml-main-5-12.xsd`, `fpml-confirmation-processes-5-12.xsd`, `fpml-clearing-processes-5-12.xsd`, `fpml-msg-5-12.xsd` etc.).
+- Compiled full taxonomy and usage explanation of XML Document Root Elements.
+- Created new Wiki page: `wiki/architecture/root-elements.md` and updated `wiki/index.md`.
+
+## [2026-07-25] lint | Migrated all Wiki inter-file Markdown links to relative paths
+- Updated `docs/agents/wiki.md` Agent formatting guidelines to mandate relative Markdown links.
+- Replaced all absolute `file:///...` links with relative paths (`./`, `../`, `../../`) across all Wiki pages (`index.md`, `overview.md`, `shared-foundation.md`, `ird.md`, `fx.md`, `credit.md`, `equity.md`, `business-processes.md`, `root-elements.md`).
+
+## [2026-07-25] lint | Converted all unlinked Raw source file mentions (XSD schemas) to relative links
+- Updated `docs/agents/wiki.md` formatting guidelines to mandate linking all Raw file mentions.
+- Replaced unlinked inline code mentions of XSD schemas (`fpml-main-5-12.xsd`, `fpml-shared-5-12.xsd`, `fpml-ird-5-12.xsd`, etc.) with relative Markdown links in `index.md`, `overview.md`, `shared-foundation.md`, and `architecture/root-elements.md`.
