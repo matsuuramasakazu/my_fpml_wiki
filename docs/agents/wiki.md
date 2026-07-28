@@ -15,7 +15,7 @@ This document defines the rules and workflows for operating as an LLM Wiki maint
 2. **The Wiki (`wiki/`)**:
    - A persistent, compounding knowledge base written in Markdown.
    - `wiki/index.md`: Content catalog listing every page with links and one-line summaries.
-   - `wiki/log.md`: Chronological append-only event log (`## [YYYY-MM-DD] action | summary`).
+   - `wiki/log.md`: Reverse-chronological event log listing all Ingest, Query compounding, and Lint operations (`## [YYYY-MM-DD] action | summary`).
    - Structural subdirectories: `products/`, `processes/`, `architecture/`, `common/`, etc.
 
 3. **The Schema (This Protocol & `AGENTS.md`)**:

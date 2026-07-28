@@ -56,7 +56,34 @@ ISDA 慣行に基づく営業日調整ルールを定義。
 
 ---
 
-## 3. 関連 Wiki ページ
+## 3. 日数計算コンベンション (Day Count Fractions: `30E/360` vs `30E/360.ISDA`)
+
+FpML コードリスト [`codelist/day-count-fraction-2-3.xml`](../../codelist/day-count-fraction-2-3.xml) で定義されている日分基準のうち、主に欧州債・デリバティブ市場で用いられる **`30E/360`** と **`30E/360.ISDA`** の相違点と算術アルゴリズムの解説です。
+
+基本算式:
+$$\text{Fraction} = \frac{360 \times (Y_2 - Y_1) + 30 \times (M_2 - M_1) + (D_2 - D_1)}{360}$$
+（開始日 $(Y_1, M_1, D_1)$、終了日 $(Y_2, M_2, D_2)$）
+
+### 3.1 アルゴリズムの比較
+
+| 項目 | `30E/360` (Eurobond Basis) | `30E/360.ISDA` (Eurobond Basis - ISDA Method) |
+|---|---|---|
+| **コードリスト定義** | [`codelist/day-count-fraction-2-3.xml` L67-L83](../../codelist/day-count-fraction-2-3.xml#L67-L83) | [`codelist/day-count-fraction-2-3.xml` L84-L100](../../codelist/day-count-fraction-2-3.xml#L84-L100) |
+| **ISDA 準拠定義** | 2021 ISDA Sec 4.6.1(vii) / 2006 ISDA Sec 4.16(g) | 2021 ISDA Sec 4.6.1(viii) / 2006 ISDA Sec 4.16(h) |
+| **開始日 $D_1$ の調整** | $D_1 = 31 \rightarrow D_1 = 30$ | $D_1 = 31$ または **2月末日** $\rightarrow D_1 = 30$ |
+| **終了日 $D_2$ の調整** | $D_2 = 31 \rightarrow D_2 = 30$（一律） | $D_2 = 31 \rightarrow D_2 = 30$。<br>**ただし、終了日が計算期間の最終日 (Termination Date) の場合は 30 に変更せず 31 のまま保持する**。 |
+
+### 3.2 具体的計算例の比較（例: 8月31日 〜 12月31日）
+- **`30E/360`**:
+  - $D_1 = 31 \rightarrow 30$, $D_2 = 31 \rightarrow 30$ (Termination Date でも 30 に変更)
+  - 分子日数: $30 \times (12 - 8) + (30 - 30) = 120$ 日
+- **`30E/360.ISDA`**:
+  - $D_1 = 31 \rightarrow 30$, $D_2 = 31 \rightarrow 31$ (12月31日が Termination Date のため 31 を維持)
+  - 分子日数: $30 \times (12 - 8) + (31 - 30) = 121$ 日
+
+---
+
+## 4. 関連 Wiki ページ
 - [Overview](../overview.md)
 - [Interest Rate Derivatives](../products/ird.md)
 - [Index](../index.md)
