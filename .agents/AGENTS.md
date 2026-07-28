@@ -45,3 +45,9 @@ Single-context layout (`CONTEXT.md` + `docs/adr/` at repo root). See `docs/agent
 ### LLM Wiki
 
 Persistent compounding knowledge base based on the Karpathy LLM Wiki pattern. See `docs/agents/wiki.md`.
+
+## Strict Execution & Anti-Hallucination Protocol (ツール実行検証と虚偽報告の厳禁)
+- **Action-First Principle (ツール実行優先)**: 
+  ファイルの作成・更新、Wikiへの還元、コマンド実行を行う際は、**必ず同一ターン内で実際のツール (`replace_file_content`, `write_to_file` 等) を呼出し、正常終了したことを確認してから**「反映した/更新した」と報告すること。ツールを呼出さずにテキスト上だけで「反映しました」と述べる虚偽報告を固く禁止する。
+- **Mandatory Wiki Compound Verification**: 
+  質問回答により得られたナレッジを Wiki へ還元する際は、口頭での説明に留めず、必ずツールを用いて `wiki/` 配下の実ファイルを書き換え、`wiki/index.md` および `wiki/log.md` を更新した結果を確認すること。

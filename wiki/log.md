@@ -2,6 +2,11 @@
 
 This is an append-only event log tracking all Ingest, Query compounding, and Lint operations performed on the Wiki.
 
+## [2026-07-28] query | Compounded mtM Cross-Currency Swap Rate Reset Event & Trade State Cashflows modeling
+- Analyzed FpML 5.12 Business Events schema (`fpml-business-events-5-12.xsd`), IRD schema (`fpml-ird-5-12.xsd`), and sample XMLs (`reset_ex01.xml`, `ird-ex26-fxnotional-swap-with-cfs.xml`).
+- Documented mtM Swap Rate Reset / Fixing event structures using `<reset>` (`ResetEvent`) for lifecycle event notification, and `swapStream/cashflows` (`Cashflows` / `paymentCalculationPeriod` / `fxLinkedNotionalAmount` / `principalExchange`) for current Trade State representation.
+- Compounded knowledge into `wiki/products/xccy-swap.md` Section 5 (5.1-5.4) and updated `wiki/index.md`.
+
 ## [2026-07-25] query | Compounded NDS mid-life fixing cashflows & event modeling guidelines
 - Analyzed FpML 5.12 Confirmation View XSD schemas and sample XMLs for NDS / NDF mid-life fixing representation.
 - Documented schema constraints (`PaymentCalculationPeriod` vs `settlementProvision/nonDeliverableSettlement`).

@@ -110,7 +110,162 @@ FpML では `swap` 要素内に2つの `swapStream`（USDレグ・JPYレグ）�
 
 ---
 
-## 5. 関連 Wiki ページ
+---
+
+## 5. 元本リセット型通貨スワップ（mtM Swap）における期中 Rate Reset / Fixing イベント表現
+
+元本リセットタイプの通貨スワップ（Mark-to-Market Cross-Currency Swap / **mtMスワップ**）において、期中に為替レート（FX Spot Rate）が確定（Fixing / Reset）し、変動レグ側の**想定元本（Notional Amount）**および元本交換差額（Principal Exchange）が再計算・確定した際のイベント情報は、FpML 5.12 Business Events スキーマ ([`confirmation/fpml-business-events-5-12.xsd`](../../confirmation/fpml-business-events-5-12.xsd#L939-L971)) において **`<reset>` 要素（`ResetEvent` 型）** で表現されます。
+
+### 5.1 スキーマ構造と構成要素 (`ResetEvent` / `ResetCalculationDetails`)
+- **`<reset>` (`ResetEvent`)** ([`fpml-business-events-5-12.xsd` L939-L971](../../confirmation/fpml-business-events-5-12.xsd#L939-L971)):
+  - `<tradeReference>`: 対象となる mtM スワップ取引の参照 (`partyTradeIdentifier`)。
+  - `<legIdentifier>`: リセット対象となるスワップのレグ識別子 (`legId`)。
+  - `<date>`: レート確定（Reset / Fixing）日。
+  - `<resetValue>`: 確定した為替レート（FX Fixing Rate）。
+  - `<calculationDetails>` (`ResetCalculationDetails` 型, [L62-L78](../../confirmation/fpml-business-events-5-12.xsd#L62-L78)):
+    - `<observation>` / `<observationReference>`: 適用された FX 観測値（レートソース: Bloomberg, Refinitiv 等や観測日時）への参照。
+    - `<calculationElements>` (`ResetCalculationElements` 型, [L79-L97](../../confirmation/fpml-business-events-5-12.xsd#L79-L97)): 
+      - `<notional>`: リセット後に新たに調整・計算された**新想定元本（Notional Amount）**とその通貨。
+      - `<calculatedRate>`: 確定レートや適用されたスプレッド・丸め処理。
+      - `<calculationPeriod>`: 対象となる計算期間（Start/End Date, Day Count Fraction 等）。
+
+### 5.2 FpML 5.12 XML 表現例 (`executionAdvice` 内の `<reset>`)
+実務プロセスにおける通知メッセージ（`executionAdvice` 等）内での典型的な `<reset>` イベント構造スニペット（参照サンプル: [`confirmation/business-processes/reset/reset_ex01.xml`](../../confirmation/business-processes/reset/reset_ex01.xml#L18-L91)）：
+
+```xml
+<executionAdvice xmlns="http://www.fpml.org/FpML-5/confirmation" fpmlVersion="5-12">
+  <header>
+    <messageId messageIdScheme="http://www.isda.org/coding-scheme/isda/message-id">MSG-RESET-20260728-001</messageId>
+    <sentBy>PARTYA_LEI</sentBy>
+    <sendTo>PARTYB_LEI</sendTo>
+    <creationTimestamp>2026-07-28T10:00:00Z</creationTimestamp>
+  </header>
+  <isCorrection>false</isCorrection>
+
+  <!-- 観測値 (FX Rate Observation) -->
+  <observation>
+    <eventIdentifier>
+      <partyReference href="party1"/>
+      <eventId>obs-fx-001</eventId>
+    </eventIdentifier>
+    <date>2026-07-28</date>
+    <observedValue>155.25</observedValue>
+    <source>
+      <informationSource>
+        <rateSource>WM/Reuters</rateSource>
+        <rateSourcePage>USDJPYFIX</rateSourcePage>
+      </informationSource>
+    </source>
+  </observation>
+
+  <!-- 元本リセット (Reset Event) -->
+  <reset>
+    <eventIdentifier>
+      <partyReference href="party1"/>
+      <eventId>reset-mtm-001</eventId>
+    </eventIdentifier>
+    <tradeReference>
+      <partyTradeIdentifier>
+        <partyReference href="party1"/>
+        <tradeId tradeIdScheme="http://www.bank.com/trade-id">MTM-SWAP-9981</tradeId>
+      </partyTradeIdentifier>
+    </tradeReference>
+    <legIdentifier>
+      <legId legIdScheme="http://www.bank.com/leg-id">USD-MTM-LEG</legId>
+    </legIdentifier>
+    <date>2026-07-28</date>
+    <resetValue>155.25</resetValue>
+    <calculationDetails>
+      <observation>
+        <observationReference>
+          <eventIdentifier>
+            <partyReference href="party1"/>
+            <eventId>obs-fx-001</eventId>
+          </eventIdentifier>
+        </observationReference>
+      </observation>
+      <calculationElements>
+        <!-- レート確定に伴いリセットされた新想定元本 -->
+        <notional>
+          <currency>JPY</currency>
+          <amount>15525000000</amount>
+        </notional>
+        <calculationPeriod>
+          <adjustedStartDate>2026-07-28</adjustedStartDate>
+          <adjustedEndDate>2026-10-28</adjustedEndDate>
+        </calculationPeriod>
+      </calculationElements>
+    </calculationDetails>
+  </reset>
+</executionAdvice>
+```
+
+### 5.3 実務処理（ライフサイクル通知 vs 約定更新コンファーメーション）
+1. **ライフサイクル事績通知 (`ResetNotice` / `executionAdvice`)**:
+   - 期中定期の Fixing 通知では、`<reset>` (`ResetEvent`) を用いた通知が標準的です。
+2. **取引全般の再確認・約定更新 (`TradeAmendmentContent` / `<amendment>`)**:
+   - リセットされた想定元本を取引契約全般の現行ステート（Trade State）として反映し、コンファーメーションを再発行する場合は、`<amendment>` ([`fpml-business-events-5-12.xsd` L1496](../../confirmation/fpml-business-events-5-12.xsd#L1496)) を用いて更新後の `notional` および `principalExchange` を含む新しい `<trade>` を伝達するモデルも採用されます。
+
+### 5.4 現行の約定状態（Trade State）としての `<cashflows>` 表現モデル
+
+過去の事績通知（`<reset>`）に対し、確定した為替レート（FX Spot Rate）やそれに伴う新想定元本・各計算期間の支払額を**取引の現行契約状態（Trade State）**として表現する場合は、`swapStream` 内の **`<cashflows>`（`Cashflows` complexType, [`confirmation/fpml-ird-5-12.xsd` L353-L374](../../confirmation/fpml-ird-5-12.xsd#L353-L374)）** 要素を使用します。
+
+#### `<cashflows>` 内での主な構成要素
+- **`paymentCalculationPeriod` / `calculationPeriod`** ([`fpml-ird-5-12.xsd` L100-L163](../../confirmation/fpml-ird-5-12.xsd#L100-L163)):
+  - `fxLinkedNotionalAmount`: 確定レート適用後の新想定元本、および Fixing 日 (`adjustedFxSpotFixingDate`)。
+  - `notionalAmount`: リセット後に適用される当該計算期間の確定想定元本額（参照サンプル: [`confirmation/products/interest-rate-derivatives/ird-ex26-fxnotional-swap-with-cfs.xml` L101](../../confirmation/products/interest-rate-derivatives/ird-ex26-fxnotional-swap-with-cfs.xml#L101)）。
+  - `floatingRateDefinition`: 確定 Fixing 日 (`adjustedFixingDate`)、観測レート (`observedRate`)、および確定金利 (`calculatedRate`)。
+  - `forecastAmount`: 確定レートに基づき算出された該当期間の支払見込金額。
+- **`principalExchange`** ([`fpml-ird-5-12.xsd` L363](../../confirmation/fpml-ird-5-12.xsd#L363)):
+  - 期中リセットに伴い発生する**中間元本交換（Intermediate Principal Exchange）**の発生日と確定金額。
+
+#### XML 表現例 (`swapStream/cashflows`)
+確定結果を `swapStream/cashflows` 内に埋め込んだ表現例（参照サンプル: [`ird-ex26-fxnotional-swap-with-cfs.xml` L312-L377](../../confirmation/products/interest-rate-derivatives/ird-ex26-fxnotional-swap-with-cfs.xml#L312-L377)）：
+
+```xml
+<swapStream id="JPY-MTM-LEG">
+  <payerPartyReference href="partyB"/>
+  <receiverPartyReference href="partyA"/>
+  <!-- 元本交換スケジュール（中間元本交換含む） -->
+  <principalExchanges>
+    <initialExchange>true</initialExchange>
+    <finalExchange>true</finalExchange>
+    <intermediateExchange>true</intermediateExchange>
+  </principalExchanges>
+
+  <!-- 期中 Fixing / 確定キャッシュフロー状態表現 -->
+  <cashflows>
+    <cashflowsMatchParameters>true</cashflowsMatchParameters>
+    <paymentCalculationPeriod>
+      <adjustedPaymentDate>2026-10-28</adjustedPaymentDate>
+      <calculationPeriod>
+        <adjustedStartDate>2026-07-28</adjustedStartDate>
+        <adjustedEndDate>2026-10-28</adjustedEndDate>
+        <fxLinkedNotionalAmount>
+          <adjustedFxSpotFixingDate>2026-07-28</adjustedFxSpotFixingDate>
+          <notionalAmount>15525000000</notionalAmount>
+        </fxLinkedNotionalAmount>
+        <floatingRateDefinition>
+          <calculatedRate>0.0025</calculatedRate>
+          <rateObservation>
+            <adjustedFixingDate>2026-07-28</adjustedFixingDate>
+            <observedRate>0.0025</observedRate>
+          </rateObservation>
+        </floatingRateDefinition>
+        <forecastAmount>
+          <currency>JPY</currency>
+          <amount>9814583</amount>
+        </forecastAmount>
+      </calculationPeriod>
+    </paymentCalculationPeriod>
+  </cashflows>
+</swapStream>
+```
+
+---
+
+## 6. 関連 Wiki ページ
 - [Interest Rate Derivatives (IRD)](./ird.md)
+- [Business Processes (ライフサイクル・イベント)](../processes/business-processes.md)
 - [Front-Office Pricing & Confirmation Business Process Flow](../processes/pricing-and-confirmation-flow.md)
 - [Front-Office Pricing & Confirmation Bounded Contexts](../architecture/pricing-bounded-contexts.md)
