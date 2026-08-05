@@ -127,13 +127,13 @@ NDS の契約定義（約定時点のパラメトリック表現）では、[`co
 </executionAdvice>
 ```
 
-### アプローチ 4: `tradeChangeAdvice` (TradeChangeContent) による新旧 Trade とイベントのパッケージ化
+### アプローチ 4: `tradeChangeAdvice` (TradeChangeContent) による Trade バージョン更新パッケージ化
 * **レイヤー**: Event ＋ Trade レベル
 * **概要**: [`confirmation/fpml-confirmation-processes-5-12.xsd`](../../confirmation/fpml-confirmation-processes-5-12.xsd#L699) の `TradeChangeAdvice` および [`confirmation/fpml-business-events-5-12.xsd`](../../confirmation/fpml-business-events-5-12.xsd#L1019) の `TradeChangeContent` を使用。
-* **バインドの仕組み**:
-  1. **直接的内包（Structure Containment）**: `TradeChangeContent` (Line 1019) コンテナ内に `<oldTrade>` / `<oldTradeIdentifier>` と Fixing 確定後の新 `<trade>`（および変更事由 `changeEvent`）が直接記述されるため、要素レベルで完全かつ曖昧さなくバインドされます。
-  2. **`versionedTradeId`**: [`confirmation/fpml-doc-5-12.xsd`](../../confirmation/fpml-doc-5-12.xsd#L1451) の `tradeHeader` 内の `partyTradeIdentifier/versionedTradeId` (`tradeId` + `version`) により、Fixing 前（Version 1）から Fixing 後（Version 2）への状態遷移が追跡されます。
-* **適用領域**: 監査証跡（Audit Trail）や変更履歴（Lifecycle Lineage）の保持が厳格に求められる時価値洗い・ポジション更新処理。
+* **表現性および XSD 型定義の限界**:
+  - **Trade 状態遷移の表現可能範囲**: `<oldTradeIdentifier>`（Version 1）と Fixing 確定後の確定金額（`forecastPaymentAmount` 等）が反映された新 `<trade>`（Version 2）を `versionedTradeId` で対比させ、Fixing に伴う Trade バージョン更新を単一メッセージでパッケージ化できます。
+  - **Fixing データ自体の表現不可能性**: `TradeChangeContent` 内の `<changeEvent>` （型: `ChangeEvent`）の代入可能群 (substitutionGroup) は `<indexChange>`、`<basketChange>`、`<corporateAction>` の 3 つのみです。`<indexChange>`（[`fpml-business-events-5-12.xsd`](../../confirmation/fpml-business-events-5-12.xsd#L416)）はインデックスファクター（`indexFactor`）変更用であり、NDF/NDS の FX/IR Fixing レート（`fixingFxRate`）や Fixing 日（`fixingDate`）、観測値を記録する構造を持ちません。
+  - **結論**: アプローチ 4 は「Fixing レートデータそのものを伝達するアプローチ」としては不適合であり、Fixing 完了に伴う「Trade の Version 2 への更新通知」用途に限定されます。
 
 サンプルコード参照: [`confirmation/business-processes/trade-change-advice/msg-ex61-execution-advice-trade-change-F03-00.xml`](../../confirmation/business-processes/trade-change-advice/msg-ex61-execution-advice-trade-change-F03-00.xml#L11-L55)
 
@@ -145,8 +145,8 @@ NDS の契約定義（約定時点のパラメトリック表現）では、[`co
 | :--- | :--- | :---: | :--- | :--- |
 | **1. `forecastPaymentAmount` 反映** | Trade State | 高 (100%) | 最終確定額 (USD) のみ保持 | MTM/Valuation エンジン、最軽量ポジション管理 |
 | **2. ベンダー拡張 (`ext:fxFixing`)** | Trade State (Ext) | 低〜中 | 拡張タグ内に直接記録 | Trade 単体で全情報を完結させたいシステム |
-| **3. `business-events` (`reset`/`obs`)** | Business Event | **高 (100%)** | **`observation` 内で完全構造化** | **Fixing 発生時のシステム間通知、EAI 連係** |
-| **4. `tradeChangeAdvice`** | Event + Trade | **高 (100%)** | **`TradeChangeContent` 内包＋`versionedTradeId`** | **監査証跡・変更履歴が必要な状態遷移通知** |
+| **3. `business-events` (`reset`/`obs`)** | Business Event | **高 (100%)** | **`observation` 内で完全構造化** | **Fixing 発生時のシステム間通知、EAI 連係（イベント単体通知の標準手法）** |
+| **4. `tradeChangeAdvice`** | Event + Trade | 低（Fixing通知としては不適合） | **表現不可**（`changeEvent` に Fixing データ項目なし。新 Trade 内の `forecastPaymentAmount` 等で代用） | **Fixing 完了に伴う Trade バージョン更新（Version 1 → 2）の通知** |
 
 ---
 
