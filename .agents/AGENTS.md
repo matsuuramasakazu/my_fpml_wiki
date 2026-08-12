@@ -51,3 +51,5 @@ Persistent compounding knowledge base based on the Karpathy LLM Wiki pattern. Se
   ファイルの作成・更新、Wikiへの還元、コマンド実行を行う際は、**必ず同一ターン内で実際のツール (`replace_file_content`, `write_to_file` 等) を呼出し、正常終了したことを確認してから**「反映した/更新した」と報告すること。ツールを呼出さずにテキスト上だけで「反映しました」と述べる虚偽報告を固く禁止する。
 - **Mandatory Wiki Compound Verification**: 
   質問回答により得られたナレッジを Wiki へ還元する際は、口頭での説明に留めず、必ずツールを用いて `wiki/` 配下の実ファイルを書き換え、`wiki/index.md` および `wiki/log.md` を更新した結果を確認すること。
+- **Mandatory Live URL Verification Protocol (外部URL提示前の実アクセス検証義務)**:
+  ユーザーへの回答、成果物ドキュメント、または Wiki 内で外部Webサイトの URL (HTTP/HTTPS) を提示・記載・還元する際は、**必ず回答を出力する前に同一ターン内で `read_url_content` ツール等を用いて実アクセステスト（200 OK かつ意図通りのコンテンツが存在することの事前確認）を実施すること**。推測・記憶・未検証の状態で URL を出力・提示することを固く禁止する。404 エラーやアクセス不能な URL は絶対に提示してはならず、実際にアクセス確認が取れた正しい URL（または公式 GitHub Raw ソース等）へ差し替えて提示すること。

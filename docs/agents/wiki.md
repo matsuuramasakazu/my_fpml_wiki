@@ -85,6 +85,7 @@ When adding or compounding knowledge, ALWAYS classify and place files according 
 ## 5. Formatting & Language Guidelines
 
 - **Relative Links Mandatory**: Use standard Markdown relative links (e.g., `./overview.md`, `../common/shared-foundation.md`, `../../confirmation/fpml-ird-5-12.xsd`) for all inter-file references and raw source file mentions. Do NOT use unlinked text or absolute paths.
+- **Mandatory Live URL Verification**: External URLs (HTTP/HTTPS) presented to users or added to Wiki pages MUST be verified in the same turn via `read_url_content` (or similar fetch tools) to ensure HTTP 200 status and expected content before outputting. Never output unverified or dead 404 links.
 - **YAML Frontmatter**: Include frontmatter on entity pages (`tags`, `schemas`, `updated`).
 - **Japanese Terminology Standard**: Always use standard Japanese terminology commonly adopted by financial institutions and market participants in Japanese OTC derivative markets. Avoid literal or generic machine translations.
   

@@ -105,14 +105,14 @@ FpML では、同一 XML ドキュメント内でデータ重複を防ぎ構造�
 - **概要**: [`fpml-shared-5-12.xsd` L7](../../confirmation/fpml-shared-5-12.xsd#L7) で定義されている名前空間 `xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"` による拡張アノテーション属性。
 - **役割**: `xsd:IDREF` 自体は単なる汎用ポインタ（型情報を持たない参照）であるため、コードジェネレータ（EMF や Java/C# クラス生成ツール）に対して「この参照属性 (`href`) の指し示す具体的ドメイン型は `Party` である」というメタ情報を提示し、強型付けされたオブジェクトモデル（例: `Party party` メンバー変数）を自動生成させるために用いられる。
 
-### 4.3 一次情報ソース (Official Documentation & Standards)
+### 4.3 一次情報ソース (Official Documentation & Standards - Verified Live)
 - **`xsd:IDREF` 仕様 (W3C)**:
   - [W3C XML Schema Part 2: Datatypes Second Edition (Section 3.3.9 IDREF)](https://www.w3.org/TR/xmlschema-2/#IDREF)
   - [W3C XML Schema Definition Language (XSD) 1.1 Part 2: Datatypes (Section 3.3.9 IDREF)](https://www.w3.org/TR/xmlschema11-2/#IDREF)
 - **`ecore` / EMF 仕様 (Eclipse Foundation & FpML)**:
-  - [Eclipse Modeling Framework (EMF) - Mapping XML Schema to Ecore Guide](https://help.eclipse.org/latest/index.jsp?topic=%2Forg.eclipse.emf.doc%2Freferences%2Foverview%2FEMF.html)
-  - [Eclipse Ecore ExtendedMetaData API Reference](https://archive.eclipse.org/modeling/emf/emf/javadoc/2.5.0/org/eclipse/emf/ecore/util/ExtendedMetaData.html)
-  - [FpML 5.12 Architecture Specification (Section 3: Intra-Document References)](https://www.fpml.org/spec/fpml-5-12-2-rec-1/html/confirmation/architecture/architecture-5-12.html)
+  - [Eclipse Modeling Framework (EMF) Official Project Page](https://eclipse.dev/modeling/emf/)
+  - [Eclipse EMF ExtendedMetaData Official GitHub Source & Javadoc](https://raw.githubusercontent.com/eclipse-emf/org.eclipse.emf/master/plugins/org.eclipse.emf.ecore/src/org/eclipse/emf/ecore/util/ExtendedMetaData.java)
+  - [FpML Official Portal](https://www.fpml.org/)
 
 ---
 

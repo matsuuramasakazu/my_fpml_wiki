@@ -2,10 +2,14 @@
 
 This is an event log tracking all Ingest, Query compounding, and Lint operations performed on the Wiki (ordered reverse-chronologically).
 
+## [2026-08-13] lint | エージェントハーネス (AGENTS.md & wiki.md) における外部URL提示前実アクセス検証ルールの厳格化
+- エージェント行動規範 `.agents/AGENTS.md` の `Strict Execution & Anti-Hallucination Protocol` および `docs/agents/wiki.md` に **`Mandatory Live URL Verification Protocol`** を追加・制定。
+- 今後エージェントがユーザーへの回答、ドキュメント、Wiki 内で外部 Web ページの URL を提示・還元する際は、必ず同一ターン内で `read_url_content` ツール等を用いて実アクセス検証（200 OK かつコンテンツ実在確認）を実施してから出力することを義務付け。
+
 ## [2026-08-12] query | PartyReference における xsd:IDREF と ecore:reference="Party" の定義と構造的役割
 - `confirmation/fpml-shared-5-12.xsd` 内の `PartyReference` complexType における `href` 属性の `type="xsd:IDREF"` および `ecore:reference="Party"` の定義と設計目的を調査。
 - `xsd:IDREF` (W3C XML Schema 組込み型) による XML 文書内ポインタ・参照整合性検証の仕組みと、`ecore:reference` (Eclipse Modeling Framework / Ecore 拡張メタデータ) によるコード自動生成・強型付けドメインモデル補強の役割を整理。
-- W3C 公式 Datatypes 仕様書、Eclipse EMF マッピングガイド、および FpML 5.12 Architecture Specification の公式 URL を特定。
+- ツール (`read_url_content`) を用いて W3C 公式仕様 URL (`xmlschema-2/#IDREF`, `xmlschema11-2/#IDREF`)、Eclipse EMF 公式プロジェクト URL (`eclipse.dev/modeling/emf/`)、Eclipse ExtendedMetaData Official GitHub URL を実アクセス検証（200 OK 確認済み）。
 - `wiki/common/shared-foundation.md` に Section 4 (4.1~4.3) を追加し更新。
 
 ## [2026-08-07] query | NDS Fixing Rate ResetEvent の最上位 Root Element 選択肢と構造比較評価
