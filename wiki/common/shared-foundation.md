@@ -83,7 +83,31 @@ $$\text{Fraction} = \frac{360 \times (Y_2 - Y_1) + 30 \times (M_2 - M_1) + (D_2 
 
 ---
 
-## 4. 関連 Wiki ページ
+## 4. ドキュメント内参照メカニズム (`xsd:IDREF` と `ecore:reference`)
+
+FpML では、同一 XML ドキュメント内でデータ重複を防ぎ構造を関係付けするために、参照（Intra-Document Pointer）パターンが多用されます（例: [`PartyReference`](../../confirmation/fpml-shared-5-12.xsd#L2839-L2848)）。
+
+```xml
+<xsd:complexType name="PartyReference">
+  <xsd:complexContent>
+    <xsd:extension base="Reference">
+      <xsd:attribute name="href" type="xsd:IDREF" use="required" ecore:reference="Party" />
+    </xsd:extension>
+  </xsd:complexContent>
+</xsd:complexType>
+```
+
+### 4.1 `xsd:IDREF` (W3C XML Schema 組込み型)
+- **概要**: `xmlns:xsd="http://www.w3.org/2001/XMLSchema"` 名前空間で規定されている W3C 標準の組み込み単純型。
+- **役割**: XML ドキュメント内の別の要素が持つ `xsd:ID` 型属性（例: `<party id="party1">`）の値とリンクし、参照整合性（参照先の ID が文書内に実在するか）を XML バリデータレベルで保証する。
+
+### 4.2 `ecore:reference` (Eclipse Modeling Framework メタデータ)
+- **概要**: [`fpml-shared-5-12.xsd` L7](../../confirmation/fpml-shared-5-12.xsd#L7) で定義されている名前空間 `xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"` による拡張アノテーション属性。
+- **役割**: `xsd:IDREF` 自体は単なる汎用ポインタ（型情報を持たない参照）であるため、コードジェネレータ（EMF や Java/C# クラス生成ツール）に対して「この参照属性 (`href`) の指し示す具体的ドメイン型は `Party` である」というメタ情報を提示し、強型付けされたオブジェクトモデル（例: `Party party` メンバー変数）を自動生成させるために用いられる。
+
+---
+
+## 5. 関連 Wiki ページ
 - [Overview](../overview.md)
 - [Interest Rate Derivatives](../products/ird.md)
 - [Index](../index.md)

@@ -2,6 +2,16 @@
 
 This is an event log tracking all Ingest, Query compounding, and Lint operations performed on the Wiki (ordered reverse-chronologically).
 
+## [2026-08-12] query | PartyReference における xsd:IDREF と ecore:reference="Party" の定義と構造的役割
+- `confirmation/fpml-shared-5-12.xsd` 内の `PartyReference` complexType における `href` 属性の `type="xsd:IDREF"` および `ecore:reference="Party"` の定義と設計目的を調査。
+- `xsd:IDREF` (W3C XML Schema 組込み型) による XML 文書内ポインタ・参照整合性検証の仕組みと、`ecore:reference` (Eclipse Modeling Framework / Ecore 拡張メタデータ) によるコード自動生成・強型付けドメインモデル補強の役割を整理。
+- `wiki/common/shared-foundation.md` に Section 4 を追加し更新。
+
+## [2026-08-07] query | NDS Fixing Rate ResetEvent の最上位 Root Element 選択肢と構造比較評価
+- NDS (Non-Deliverable Swap) 等における Fixing 結果データ保持・伝送のた​​めの `ResetEvent` (`<reset>`) のコンテナとなる Root Element の選択肢を評価。
+- `fpml-confirmation-processes-5-12.xsd` の `<executionAdvice>` (標準/推奨), `<responseData>`, `<tradeChangeAdvice>` および `fpml-doc-5-12.xsd` の `<dataDocument>` (XSD上不適合) を比較。
+- `wiki/processes/reset-events.md` を作成し `wiki/index.md` を更新。
+
 ## [2026-07-29] query | FloatingRateDefinitionにおける複数capRate/floorRate要素の定義と実務用途の解釈
 - `confirmation/fpml-ird-5-12.xsd` 内の `FloatingRateDefinition` 型において `capRate` / `floorRate` が `maxOccurs="unbounded"` で定義されている根拠と用途を調査・解釈。
 - キャップ・スプレッド (Cap Spread) / コリドー・スワップ (Corridor Swap) やフロア・スプレッド (Floor Spread) において、同一計算期間に売買方向（`buyer`/`seller`）およびストライク水準の異なる複数のオプションが同一レグ上に同居する実務上の必要性を整理。

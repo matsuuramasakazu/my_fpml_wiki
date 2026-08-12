@@ -44,15 +44,15 @@ FpML におけるルートエレメントは、大別して以下の **4つの�
 
 約定後の変更、権利行使、中途解約、ノベーションなど、取引のライフサイクルで発生する各種イベントを伝達するルートエレメントです。
 
-| ルートエレメント名 | 定義 XSD | 概要と実務用途 |
-| --- | --- | --- |
-| `executionNotification` / `executionAdvice` | [`fpml-confirmation-processes-5-12.xsd`](../../confirmation/fpml-confirmation-processes-5-12.xsd) | **約定成立通知**: ブローカーや電子取引プラットフォームから当事者へ取引約定（Execution）を通知するメッセージ。 |
-| `tradeChangeAdvice` | [`fpml-confirmation-processes-5-12.xsd`](../../confirmation/fpml-confirmation-processes-5-12.xsd) | **取引変更・訂正通知 (Amendment / Correction)**: 既約定取引の誤記訂正や条件変更を通知・記録するメッセージ。 |
-| `requestConsent` / `consentGranted` / `consentRefused` | [`fpml-confirmation-processes-5-12.xsd`](../../confirmation/fpml-confirmation-processes-5-12.xsd) | **承認要求 / 承認 / 拒絶**: 中途解約や条件変更の前に相手方の事前同意（Consent）を求める一連のメッセージ。 |
-| `optionExercise` / `optionExerciseNotification` | [`fpml-business-events-5-12.xsd`](../../confirmation/fpml-business-events-5-12.xsd) 等 | **オプション権利行使**: オプション取引の権利行使（Option Exercise）を通知するメッセージ。 |
-| `optionExpiry` / `optionExpiryNotification` | [`fpml-business-events-5-12.xsd`](../../confirmation/fpml-business-events-5-12.xsd) 等 | **オプション消滅・失効**: オプションが未行使のまま満期を迎えて消滅（Expiry）したことを通知するメッセージ。 |
-| `de-clearing` / `de-clearingNotification` | [`fpml-clearing-processes-5-12.xsd`](../../confirmation/fpml-clearing-processes-5-12.xsd) | **清算取消（De-clearing）**: CCP 清算対象から取引を除外・取消するイベントメッセージ。 |
-| `maturityNotification` | [`fpml-confirmation-processes-5-12.xsd`](../../confirmation/fpml-confirmation-processes-5-12.xsd) | **満期到来通知**: 取引が最終満期日（Maturity Date）に達したことを通知するメッセージ。 |
+| ルートエレメント名                                              | 定義 XSD                                                                                            | 概要と実務用途                                                               |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `executionNotification` / `executionAdvice`            | [`fpml-confirmation-processes-5-12.xsd`](../../confirmation/fpml-confirmation-processes-5-12.xsd) | **約定成立通知**: ブローカーや電子取引プラットフォームから当事者へ取引約定（Execution）を通知するメッセージ。        |
+| `tradeChangeAdvice`                                    | [`fpml-confirmation-processes-5-12.xsd`](../../confirmation/fpml-confirmation-processes-5-12.xsd) | **取引変更・訂正通知 (Amendment / Correction)**: 既約定取引の誤記訂正や条件変更を通知・記録するメッセージ。 |
+| `requestConsent` / `consentGranted` / `consentRefused` | [`fpml-confirmation-processes-5-12.xsd`](../../confirmation/fpml-confirmation-processes-5-12.xsd) | **承認要求 / 承認 / 拒絶**: 中途解約や条件変更の前に相手方の事前同意（Consent）を求める一連のメッセージ。        |
+| `optionExercise` / `optionExerciseNotification`        | [`fpml-business-events-5-12.xsd`](../../confirmation/fpml-business-events-5-12.xsd) 等             | **オプション権利行使**: オプション取引の権利行使（Option Exercise）を通知するメッセージ。               |
+| `optionExpiry` / `optionExpiryNotification`            | [`fpml-business-events-5-12.xsd`](../../confirmation/fpml-business-events-5-12.xsd) 等             | **オプション消滅・失効**: オプションが未行使のまま満期を迎えて消滅（Expiry）したことを通知するメッセージ。           |
+| `de-clearing` / `de-clearingNotification`              | [`fpml-clearing-processes-5-12.xsd`](../../confirmation/fpml-clearing-processes-5-12.xsd)         | **清算取消（De-clearing）**: CCP 清算対象から取引を除外・取消するイベントメッセージ。                 |
+| `maturityNotification`                                 | [`fpml-confirmation-processes-5-12.xsd`](../../confirmation/fpml-confirmation-processes-5-12.xsd) | **満期到来通知**: 取引が最終満期日（Maturity Date）に達したことを通知するメッセージ。                  |
 
 ---
 
