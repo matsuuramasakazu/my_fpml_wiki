@@ -2,6 +2,11 @@
 
 This is an event log tracking all Ingest, Query compounding, and Lint operations performed on the Wiki (ordered reverse-chronologically).
 
+## [2026-08-13] query | ecore:reference メタデータの詳細構造と情報ソースの具体的場所の引用・深掘り解説
+- `confirmation/fpml-shared-5-12.xsd` (L7, L2845)、W3C XML Schema 1.0 仕様 (Sec 3.3.9)、および Eclipse EMF `ExtendedMetaData.java` ソースコードを具体的に引用・対比。
+- W3C XSD 1.0 の IDREF ターゲット型制約の欠如、Ecore における Containment（包摂）と Non-Containment Reference（非包含参照）の対比、および強型付けドメインコード自動生成への効果を詳細解説。
+- `wiki/common/shared-foundation.md` Section 4.2 を改訂・拡張。
+
 ## [2026-08-13] lint | エージェントハーネス (AGENTS.md & wiki.md) における外部URL提示前実アクセス検証ルールの厳格化
 - エージェント行動規範 `.agents/AGENTS.md` の `Strict Execution & Anti-Hallucination Protocol` および `docs/agents/wiki.md` に **`Mandatory Live URL Verification Protocol`** を追加・制定。
 - 今後エージェントがユーザーへの回答、ドキュメント、Wiki 内で外部 Web ページの URL を提示・還元する際は、必ず同一ターン内で `read_url_content` ツール等を用いて実アクセス検証（200 OK かつコンテンツ実在確認）を実施してから出力することを義務付け。

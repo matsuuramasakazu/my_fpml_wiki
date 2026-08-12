@@ -101,9 +101,66 @@ FpML では、同一 XML ドキュメント内でデータ重複を防ぎ構造�
 - **概要**: `xmlns:xsd="http://www.w3.org/2001/XMLSchema"` 名前空間で規定されている W3C 標準の組み込み単純型。
 - **役割**: XML ドキュメント内の別の要素が持つ `xsd:ID` 型属性（例: `<party id="party1">`）の値とリンクし、参照整合性（参照先の ID が文書内に実在するか）を XML バリデータレベルで保証する。
 
-### 4.2 `ecore:reference` (Eclipse Modeling Framework メタデータ)
-- **概要**: [`fpml-shared-5-12.xsd` L7](../../confirmation/fpml-shared-5-12.xsd#L7) で定義されている名前空間 `xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"` による拡張アノテーション属性。
-- **役割**: `xsd:IDREF` 自体は単なる汎用ポインタ（型情報を持たない参照）であるため、コードジェネレータ（EMF や Java/C# クラス生成ツール）に対して「この参照属性 (`href`) の指し示す具体的ドメイン型は `Party` である」というメタ情報を提示し、強型付けされたオブジェクトモデル（例: `Party party` メンバー変数）を自動生成させるために用いられる。
+### 4.2 `ecore:reference` (Eclipse Modeling Framework メタデータ) の詳細構造と情報ソース引用
+
+#### 4.2.1 概要と情報ソースの具体的場所
+`ecore:reference` は、FpML スキーマをベースに Eclipse Modeling Framework (EMF) やクラス自動生成エンジン（Java, C#, C++ 等）がドメインモデルをビルドする際、IDREF ポインタを強型付け（Strongly Typed）されたオブジェクト参照へマッピングするための拡張メタデータ属性です。
+
+- **ローカルスキーマでの定義場所 ([`confirmation/fpml-shared-5-12.xsd` L7, L2845](../../confirmation/fpml-shared-5-12.xsd#L7)):**
+  - ヘッダー宣言 ([L7](../../confirmation/fpml-shared-5-12.xsd#L7)):
+    ```xml
+    <xsd:schema xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"
+                targetNamespace="http://www.fpml.org/FpML-5/confirmation"
+                ecore:documentRoot="FpML"
+                ecore:nsPrefix="conf"
+                ecore:package="org.fpml.confirmation" ...>
+    ```
+    `xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore"` をインポートし、Ecore マッピング用のパッケージ名 (`org.fpml.confirmation`) やドキュメントルート (`FpML`) を指定しています。
+  - 属性定義 ([L2845](../../confirmation/fpml-shared-5-12.xsd#L2845)):
+    ```xml
+    <xsd:complexType name="PartyReference">
+      <xsd:complexContent>
+        <xsd:extension base="Reference">
+          <xsd:attribute name="href" type="xsd:IDREF" use="required" ecore:reference="Party" />
+        </xsd:extension>
+      </xsd:complexContent>
+    </xsd:complexType>
+    ```
+- **EMF API メタデータ仕様のソースコード ([`org.eclipse.emf.ecore.util.ExtendedMetaData.java`](https://raw.githubusercontent.com/eclipse-emf/org.eclipse.emf/master/plugins/org.eclipse.emf.ecore/src/org/eclipse/emf/ecore/util/ExtendedMetaData.java)):**
+  - Javadoc 仕様定義より引用:
+    > *"Interface for accessing and setting extended metadata on Ecore model elements. Such metadata is primarily used to support structures defined in XML schema and to retain additional information that a resource requires to produce conforming serializations."*
+  - `ExtendedMetaData` インターフェースにより、XSD スキーマ上の追加アノテーション（`ANNOTATION_URI = "http:///org/eclipse/emf/ecore/util/ExtendedMetaData"`）が Ecore モデル上の `EReference` や `EClass` に動的バインドされます。
+
+#### 4.2.2 技術的メカニズムと強型付けオブジェクトモデルの比較
+
+1. **W3C XSD 1.0 の限界と `ecore:reference` の補完**
+   W3C XML Schema 1.0 の `type="xsd:IDREF"` 仕様 ([W3C XML Schema Part 2 Sec 3.3.9](https://www.w3.org/TR/xmlschema-2/#IDREF)) は、参照先の `id` が同文書内に存在するかという参照整合性のみを検証し、**「その参照先がどの Complex Type（`Party` なのか `Account` なのか）であるか」というターゲット型制約 (Target Type Constraint) をスキーマ単体で指定できません**。
+
+2. **Containment（包摂）と Non-Containment Reference（非包含参照）の対比**
+   EMF の Ecore メタモデルにおけるオブジェクト間の関係定義：
+   - **Containment (`containment=true`):** 親要素が子要素を直接所有する包含関係（例: `Trade` が `TradeHeader` や Swap レグ要素を直下に含む構造）。
+   - **Non-Containment Cross-Reference (`containment=false`):** ドキュメント内の異なる場所にある独立した要素をポインタ参照する関係。
+   `ecore:reference="Party"` アノテーションは、EMF Importer に対し「この `href` 属性は `containment=false` かつ参照先型 `eType=Party` である `EReference` としてモデル化せよ」と直接指示します。
+
+3. **ドメインコード自動生成（Code Generation）における差異**
+   - **アノテーションなし（標準 XSD のみからクラス生成した場合）:**
+     ```java
+     // href は単なる汎用 ID 文字列として展開されてしまう
+     public class PartyReference {
+         private String href;
+         public String getHref() { return href; }
+     }
+     ```
+   - **`ecore:reference="Party"` アノテーションあり（FpML / EMF モデルバインディング時）:**
+     ```java
+     // Party オブジェクトへの強型付け参照ポインタとして展開される
+     public class PartyReference extends Reference {
+         private Party party; // ecore:reference="Party" により直感的な型バインドを実現
+         public Party getParty() { return party; }
+         public void setParty(Party value) { this.party = value; }
+     }
+     ```
+   これにより、フロントオフィスの開発者やクオンツ・アナリストは、文字列 ID のパースや手動検索コードを書くことなく、`partyReference.getParty().getPartyName()` のように直感的にドメインモデルのオブジェクトグラフを走査することが可能になります。
 
 ### 4.3 一次情報ソース (Official Documentation & Standards - Verified Live)
 - **`xsd:IDREF` 仕様 (W3C)**:
