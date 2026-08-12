@@ -2,10 +2,11 @@
 
 This is an event log tracking all Ingest, Query compounding, and Lint operations performed on the Wiki (ordered reverse-chronologically).
 
-## [2026-08-13] query | ecore:reference メタデータの詳細構造と情報ソースの具体的場所の引用・深掘り解説
-- `confirmation/fpml-shared-5-12.xsd` (L7, L2845)、W3C XML Schema 1.0 仕様 (Sec 3.3.9)、および Eclipse EMF `ExtendedMetaData.java` ソースコードを具体的に引用・対比。
-- W3C XSD 1.0 の IDREF ターゲット型制約の欠如、Ecore における Containment（包摂）と Non-Containment Reference（非包含参照）の対比、および強型付けドメインコード自動生成への効果を詳細解説。
-- `wiki/common/shared-foundation.md` Section 4.2 を改訂・拡張。
+## [2026-08-13] query | ecore:reference メタデータの詳細構造・XSDEcoreBuilder マッピング情報ソースおよび FpML アーキテクチャ設計背景の追記
+- `confirmation/fpml-shared-5-12.xsd` (L7, L2845)、W3C XML Schema 1.0 仕様 (Sec 3.3.9)、および Eclipse EMF `ExtendedMetaData.java` / `XSDEcoreBuilder` クラス仕様を具体的に引用。
+- `ecore:reference` が `containment=false` かつ `eType=Party` である `EReference` インスタンスへマッピングされる具体的処理クラス (`org.eclipse.xsd.ecore.XSDEcoreBuilder`) の情報ソースを明示。
+- FpML 標準化委員会 (AWG) による FpML 4.3 以降の Ecore アノテーション導入の技術的・歴史的設計背景 (4.2.3) を追加。
+- `wiki/common/shared-foundation.md` Section 4.2 (4.2.1~4.2.3) を改訂・追記。
 
 ## [2026-08-13] lint | エージェントハーネス (AGENTS.md & wiki.md) における外部URL提示前実アクセス検証ルールの厳格化
 - エージェント行動規範 `.agents/AGENTS.md` の `Strict Execution & Anti-Hallucination Protocol` および `docs/agents/wiki.md` に **`Mandatory Live URL Verification Protocol`** を追加・制定。

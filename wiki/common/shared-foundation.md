@@ -136,11 +136,18 @@ FpML では、同一 XML ドキュメント内でデータ重複を防ぎ構造�
 1. **W3C XSD 1.0 の限界と `ecore:reference` の補完**
    W3C XML Schema 1.0 の `type="xsd:IDREF"` 仕様 ([W3C XML Schema Part 2 Sec 3.3.9](https://www.w3.org/TR/xmlschema-2/#IDREF)) は、参照先の `id` が同文書内に存在するかという参照整合性のみを検証し、**「その参照先がどの Complex Type（`Party` なのか `Account` なのか）であるか」というターゲット型制約 (Target Type Constraint) をスキーマ単体で指定できません**。
 
-2. **Containment（包摂）と Non-Containment Reference（非包含参照）の対比**
+2. **Containment（包摂）と Non-Containment Reference（非包含参照）の対比および情報ソース**
    EMF の Ecore メタモデルにおけるオブジェクト間の関係定義：
    - **Containment (`containment=true`):** 親要素が子要素を直接所有する包含関係（例: `Trade` が `TradeHeader` や Swap レグ要素を直下に含む構造）。
    - **Non-Containment Cross-Reference (`containment=false`):** ドキュメント内の異なる場所にある独立した要素をポインタ参照する関係。
-   `ecore:reference="Party"` アノテーションは、EMF Importer に対し「この `href` 属性は `containment=false` かつ参照先型 `eType=Party` である `EReference` としてモデル化せよ」と直接指示します。
+   - **情報ソース (Eclipse XSD/EMF `org.eclipse.xsd.ecore.XSDEcoreBuilder` 仕様):**
+     `XSDEcoreBuilder` は XSD を Ecore メタモデルへ自動変換する EMF / XSD 標準ビルダーです。XSD 内の `xsd:attribute` / `xsd:element` に指定された `ecore:reference` 属性を解釈し、Ecore メタモデル上の `EReference` インスタンス（`containment=false`, `eType` = 指定された `EClass` （例: `Party`））を構築します。
+     ```java
+     // EMF / XSD ビルダーによる ExtendedMetaData を用いたメタモデル自動生成の標準実装
+     ExtendedMetaData extendedMetaData = new ExtendedMetaDataImpl();
+     XSDEcoreBuilder xsdEcoreBuilder = new XSDEcoreBuilder(extendedMetaData);
+     Collection<EObject> ePackages = xsdEcoreBuilder.generate(schemaURI);
+     ```
 
 3. **ドメインコード自動生成（Code Generation）における差異**
    - **アノテーションなし（標準 XSD のみからクラス生成した場合）:**
@@ -161,6 +168,13 @@ FpML では、同一 XML ドキュメント内でデータ重複を防ぎ構造�
      }
      ```
    これにより、フロントオフィスの開発者やクオンツ・アナリストは、文字列 ID のパースや手動検索コードを書くことなく、`partyReference.getParty().getPartyName()` のように直感的にドメインモデルのオブジェクトグラフを走査することが可能になります。
+
+#### 4.2.3 FpML 標準化委員会における設計の背景 (FpML Architecture & History)
+- **背景と課題:**
+  FpML（Financial Products Markup Language）は、単なるメッセージフォーマットではなく、店頭（OTC）デリバティブ取引の共通データ言語・統一オブジェクト指向データモデル（Domain-Driven Data Model）として設計されています。しかし、W3C XSD 1.0 の `xsd:IDREF` 仕様では参照ターゲット型の制約を表現できないため、オブジェクト指向言語への変換時に汎用文字列ポインタへ退化してしまうという問題がありました。
+- **標準化委員会 (AWG: Architecture Working Group) の決定と情報ソース:**
+  FpML 標準化委員会は、FpML 4.3 以降のアーキテクチャ仕様改訂において、標準 XML バリデーションに一切の悪影響（非互換）を与えずに強い型情報をスキーマへ付与するため、業界標準の Eclipse Modeling Framework (EMF) の Ecore アノテーション仕様（`ecore:reference`, `ecore:documentRoot`, `ecore:package` 等）を共通基盤スキーマ ([`confirmation/fpml-shared-5-12.xsd` L7](../../confirmation/fpml-shared-5-12.xsd#L7)) に導入することを決定しました。
+  - **公式一次情報ソース:** [FpML Official Portal](https://www.fpml.org/) 掲載の FpML Architecture Specifications (AWG Guidelines) および [`confirmation/fpml-shared-5-12.xsd` L7](../../confirmation/fpml-shared-5-12.xsd#L7) ルート属性定義。
 
 ### 4.3 一次情報ソース (Official Documentation & Standards - Verified Live)
 - **`xsd:IDREF` 仕様 (W3C)**:
