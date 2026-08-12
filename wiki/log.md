@@ -5,7 +5,8 @@ This is an event log tracking all Ingest, Query compounding, and Lint operations
 ## [2026-08-12] query | PartyReference における xsd:IDREF と ecore:reference="Party" の定義と構造的役割
 - `confirmation/fpml-shared-5-12.xsd` 内の `PartyReference` complexType における `href` 属性の `type="xsd:IDREF"` および `ecore:reference="Party"` の定義と設計目的を調査。
 - `xsd:IDREF` (W3C XML Schema 組込み型) による XML 文書内ポインタ・参照整合性検証の仕組みと、`ecore:reference` (Eclipse Modeling Framework / Ecore 拡張メタデータ) によるコード自動生成・強型付けドメインモデル補強の役割を整理。
-- `wiki/common/shared-foundation.md` に Section 4 を追加し更新。
+- W3C 公式 Datatypes 仕様書、Eclipse EMF マッピングガイド、および FpML 5.12 Architecture Specification の公式 URL を特定。
+- `wiki/common/shared-foundation.md` に Section 4 (4.1~4.3) を追加し更新。
 
 ## [2026-08-07] query | NDS Fixing Rate ResetEvent の最上位 Root Element 選択肢と構造比較評価
 - NDS (Non-Deliverable Swap) 等における Fixing 結果データ保持・伝送のた​​めの `ResetEvent` (`<reset>`) のコンテナとなる Root Element の選択肢を評価。
