@@ -2,6 +2,11 @@
 
 This is an event log tracking all Ingest, Query compounding, and Lint operations performed on the Wiki (ordered reverse-chronologically).
 
+## [2026-08-13] query | xsd:IDREF に設定可能な文字列ルール (W3C NCName 規格) と OK/NG 具体例の解説追記
+- W3C XML Schema Datatypes Sec 3.3.8 `NCName` 規格に基づく `xsd:IDREF` の文字ルール（先頭文字制限、使用可能記号、コロン/空白等の禁止文字）を整理。
+- 設定値の有効 (OK) / 無効 (NG) 判定比較表および XML インスタンス構文スニペットを作成。
+- `wiki/common/shared-foundation.md` Section 4.1 (4.1.1~4.1.4) を改訂・拡張。
+
 ## [2026-08-13] query | ecore:reference メタデータの詳細構造・XSDEcoreBuilder マッピング情報ソースおよび FpML アーキテクチャ設計背景の追記
 - `confirmation/fpml-shared-5-12.xsd` (L7, L2845)、W3C XML Schema 1.0 仕様 (Sec 3.3.9)、および Eclipse EMF `ExtendedMetaData.java` / `XSDEcoreBuilder` クラス仕様を具体的に引用。
 - `ecore:reference` が `containment=false` かつ `eType=Party` である `EReference` インスタンスへマッピングされる具体的処理クラス (`org.eclipse.xsd.ecore.XSDEcoreBuilder`) の情報ソースを明示。

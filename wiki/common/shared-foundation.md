@@ -97,9 +97,61 @@ FpML では、同一 XML ドキュメント内でデータ重複を防ぎ構造�
 </xsd:complexType>
 ```
 
-### 4.1 `xsd:IDREF` (W3C XML Schema 組込み型)
+### 4.1 `xsd:IDREF` (W3C XML Schema 組込み型) の詳細ルールと具体例
+
+#### 4.1.1 概要と参照整合性チェック
 - **概要**: `xmlns:xsd="http://www.w3.org/2001/XMLSchema"` 名前空間で規定されている W3C 標準の組み込み単純型。
 - **役割**: XML ドキュメント内の別の要素が持つ `xsd:ID` 型属性（例: `<party id="party1">`）の値とリンクし、参照整合性（参照先の ID が文書内に実在するか）を XML バリデータレベルで保証する。
+
+#### 4.1.2 構文ルール (W3C `NCName` 規格に基づく文字列規則)
+`xsd:IDREF`（および参照先となる `xsd:ID`）に設定できる文字列の語彙空間（Lexical Space）は、W3C XML 勧告で定める **`NCName` (Non-Colonized Name: コロンを含まない XML 名称)** 規格 ([W3C XML Schema Part 2 Sec 3.3.8 NCName](https://www.w3.org/TR/xmlschema-2/#NCName)) に厳格に従う必要があります。
+
+1. **先頭文字の制約 (Start Character Constraint):**
+   - **文字 (Letter: `A-Z`, `a-z`) または アンダースコア (`_`) で始まらなければなりません**。
+   - **数字 (`0-9`)、ハイフン (`-`)、ピリオド (`.`) で始まる文字列は不可**（構文エラー）。
+2. **2文字目以降に使用可能な文字:**
+   - アルファベット (`A-Z`, `a-z`)
+   - 数字 (`0-9`)
+   - アンダースコア (`_`)
+   - ハイフン (`-`)
+   - ピリオド (`.`)
+3. **使用絶対禁止の文字 (Forbidden Characters):**
+   - **コロン (`:`)**: 名前空間プレフィックスの区切り記号と重複するため、`NCName` では一切使用できません。
+   - **空白文字 (スペース, タブ, 改行)**: 使用不可。
+   - **記号類 (`@`, `#`, `$`, `%`, `&`, `/`, `\`, `?`, `<`, `>`, `(`, `)` 等)**: 使用不可。
+
+#### 4.1.3 設定値の有効 (OK) / 無効 (NG) 比較例
+
+| 設定値の例 | 可否 | 判定理由・規格適合性 |
+|---|---|---|
+| `party1` | **OK** | 先頭が英字 `p` で始まり、英数字のみで構成されている。 |
+| `_partyA` | **OK** | 先頭がアンダースコア `_` で始まっているため有効。 |
+| `party-tokyo-01` | **OK** | 英字で始まり、ハイフン `-` および数字を含んでいるため有効。 |
+| `party.bk.1` | **OK** | 途中にピリオド `.` を含んでいるため有効。 |
+| `1party` | **NG (エラー)** | **先頭が数字 `1` で始まっているため**（`NCName` 先頭文字制限違反）。 |
+| `-party1` | **NG (エラー)** | **先頭がハイフン `-` で始まっているため**。 |
+| `.party1` | **NG (エラー)** | **先頭がピリオド `.` で始まっているため**。 |
+| `party:1` | **NG (エラー)** | **コロン `:` が含まれているため**（`NCName` コロン禁止ルール違反）。 |
+| `party 1` | **NG (エラー)** | **空白文字（スペース）が含まれているため**。 |
+| `party@tokyo` | **NG (エラー)** | **`@` などの特殊記号が含まれているため**。 |
+
+#### 4.1.4 XML インスタンスでのバリデーション実例
+
+```xml
+<!-- ✅ 有効な XML 記述例 (VALID) -->
+<party id="party-tokyo-01">
+    <partyId partyIdScheme="http://www.fpml.org/coding-scheme/external/iso17442">LEI1234567890ABCDEFG</partyId>
+    <partyName>Tokyo Bank</partyName>
+</party>
+<!-- 参照元: NCName 構文ルールに合致 -->
+<payerPartyReference href="party-tokyo-01"/>
+
+<!-- ❌ 不正な XML 記述例 (INVALID: XML パーサーで構文エラー) -->
+<party id="123party"> <!-- ❌ エラー: id の先頭が数字 -->
+    <partyName>Bank B</partyName>
+</party>
+<payerPartyReference href="123party"/> <!-- ❌ エラー: href (xsd:IDREF) の先頭が数字 -->
+```
 
 ### 4.2 `ecore:reference` (Eclipse Modeling Framework メタデータ) の詳細構造と情報ソース引用
 
