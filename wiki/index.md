@@ -34,7 +34,7 @@ This wiki is continuously compiled and maintained by LLM agents following the Ka
 ## 4. Business Processes & Messaging
 
 - [Front-Office Pricing & Confirmation Process Flow](./processes/pricing-and-confirmation-flow.md) - 時価ゼロ（NPV=0 / Par Swap）条件の計算ソルバー処理、対顧マージン乗せ、約定（Trade Capture）、照合（Confirmation Matching）、日々の Rate Fixing に至るフロントオフィス実務フロー。
-- [Business Processes](./processes/business-processes.md) - Trade Confirmation（コンフィメーション）, Clearing（中央清算/CCP）, Allocation（アロケーション）, Option Events（権利行使等）などの業務プロセス・メッセージ表現。
+- [Business Processes](./processes/business-processes.md) - Trade Confirmation（コンファーメーション）, Clearing（中央清算/CCP）, Allocation（アロケーション）, Option Events（権利行使等）などの業務プロセス・メッセージ表現。
 - [Reset Event & NDS Fixing Knowledge](./processes/reset-events.md) - NDSのFixingデータ展開における `ResetEvent` (`<reset>`) の利用とルートエレメント選択肢の評価。
 
 

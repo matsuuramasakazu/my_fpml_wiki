@@ -13,7 +13,7 @@ updated: 2026-07-25
 - **主スキーマ**:
   - [`confirmation/fpml-eqd-5-12.xsd`](../../confirmation/fpml-eqd-5-12.xsd) - Equity Option, Equity Forward
   - [`confirmation/fpml-eq-shared-5-12.xsd`](../../confirmation/fpml-eq-shared-5-12.xsd) - エクイティ共通型 (Equity Swap Leg / Stream 等)
-  - [`confirmation/fpml-variance-swap-5-12.xsd`](../../confirmation/fpml-variance-swap-5-12.xsd) - Variance Swap
+  - [`confirmation/fpml-variance-swaps-5-12.xsd`](../../confirmation/fpml-variance-swaps-5-12.xsd) - Variance Swap
   - [`confirmation/fpml-dividend-swaps-5-12.xsd`](../../confirmation/fpml-dividend-swaps-5-12.xsd) - Dividend Swap
 - **サンプル XML**: [`confirmation/products/equity-options/`](../../confirmation/products/equity-options), [`confirmation/products/equity-swaps/`](../../confirmation/products/equity-swaps)
 

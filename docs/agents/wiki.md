@@ -18,7 +18,7 @@ This document defines the rules and workflows for operating as an LLM Wiki maint
    - `wiki/log.md`: Reverse-chronological event log listing all Ingest, Query compounding, and Lint operations (`## [YYYY-MM-DD] action | summary`).
    - Structural subdirectories: `products/`, `processes/`, `architecture/`, `common/`, etc.
 
-3. **The Schema (This Protocol & `AGENTS.md`)**:
+3. **The Schema (This Protocol, `CONTEXT.md`, `docs/adr/`, & `AGENTS.md`)**:
    - Instructions guiding how the LLM maintains cross-references, integrates new information, and keeps the Wiki healthy.
 
 ---
@@ -27,7 +27,7 @@ This document defines the rules and workflows for operating as an LLM Wiki maint
 
 ### Ingest Workflow
 When new FpML schemas, sample XMLs, or business documentation are added or requested to be ingested:
-1. **Read & Extract**: Inspect the source file(s) in `confirmation/` or provided input.
+1. **Read & Extract**: Inspect source file(s) in `confirmation/` using `python scripts/xsd_query.py` or view tools.
 2. **Synthesize & Map**: Identify relevant FpML complex types, ISDA definitions, asset classes, or message flows.
 3. **Update Wiki Pages**: Create or edit topic/entity pages under the appropriate `wiki/` directory. Cross-link related pages using Markdown relative links.
 4. **Update `wiki/index.md`**: Add new entries or update summaries across relevant sections.
@@ -35,26 +35,33 @@ When new FpML schemas, sample XMLs, or business documentation are added or reque
    ```markdown
    ## [YYYY-MM-DD] ingest | Added/updated topic description
    ```
+6. **Lint Verification**: Execute `python scripts/wiki_lint.py` to confirm 0 errors.
 
 ### Query & Compound Workflow
 When answering user queries about FpML structures, calculations, workflows, or architectures:
 1. **Consult Wiki First**: Check `wiki/index.md` and relevant `wiki/` pages before re-analyzing raw XSDs from scratch.
-2. **Answer Query**: Provide a thorough, grounded answer referencing XSD line numbers, XML snippets, and financial market practices.
-3. **Compound Back (Multi-Page Synthesis)**: If the query yielded valuable analysis, comparison tables, or new syntheses:
+2. **Query XSDs Accurately**: Use `python scripts/xsd_query.py` to verify exact schema lines, type definitions, and enumerations.
+3. **Answer Query**: Provide a thorough, grounded answer referencing XSD line numbers, XML snippets, and Japanese OTC market practices.
+4. **Compound Back (Multi-Page Synthesis)**: If the query yielded valuable analysis, comparison tables, or new syntheses:
    - **Do NOT dump everything into a single file** (e.g., placing all product, process, and architecture insights into one file under `architecture/`).
-   - **Distribute knowledge into proper directories** (`products/`, `processes/`, `architecture/`) following Section 3 rules.
+   - **Distribute knowledge into proper directories** (`products/`, `processes/`, `architecture/`, `common/`) following Section 3 rules.
    - **Establish Cross-Links**: Interlink the generated product, process, and architecture pages.
-4. **Update Index & Log**: Update `wiki/index.md` and append a record to `wiki/log.md`:
+5. **Update Index & Log**: Update `wiki/index.md` and append a record to `wiki/log.md`:
    ```markdown
    ## [YYYY-MM-DD] query | Summarized trade workflow for FX options
    ```
+6. **Lint Verification**: Execute `python scripts/wiki_lint.py` to confirm 0 errors.
 
 ### Lint Workflow
-Periodically health-check the Wiki:
-1. Check for broken file links or orphan pages lacking inbound links.
-2. Flag contradictions between older summaries and updated XSD definitions.
-3. Verify that pages are stored in their proper structural subdirectories.
-4. Update `wiki/index.md` and log the linting pass in `wiki/log.md`.
+Periodically health-check the Wiki using the automated harness tool:
+1. Run `python scripts/wiki_lint.py` (or `/fpml-wiki-lint`).
+2. Fix any reported broken relative links, missing files, or orphan pages lacking index entries.
+3. Replace any detected forbidden machine translations with standard Japanese OTC derivative market terms.
+4. Verify YAML frontmatters.
+5. Log the linting pass in `wiki/log.md`:
+   ```markdown
+   ## [YYYY-MM-DD] lint | Fixed broken links and terminology compliance
+   ```
 
 ---
 
@@ -78,13 +85,13 @@ When adding or compounding knowledge, ALWAYS classify and place files according 
 
 - **Avoid Surface-Level Summaries**:
    - Do not stop at basic dictionary definitions or generic architectural generalities.
-   - Always grounds explanations in **actual Japanese OTC derivative market practices** and **ISDA standards**.
+   - Always ground explanations in **actual Japanese OTC derivative market practices** and **ISDA standards**.
 
 ---
 
 ## 5. Formatting & Language Guidelines
 
-- **Relative Links Mandatory**: Use standard Markdown relative links (e.g., `./overview.md`, `../common/shared-foundation.md`, `../../confirmation/fpml-ird-5-12.xsd`) for all inter-file references and raw source file mentions. Do NOT use unlinked text or absolute paths.
+- **Relative Links Mandatory**: Use standard Markdown relative links (e.g., `./overview.md`, `../common/shared-foundation.md`, `../../confirmation/fpml-ird-5-12.xsd`) for all inter-file references and raw source file mentions. Do NOT use unlinked text, absolute paths, or `file:///` URLs.
 - **Mandatory Live URL Verification**: External URLs (HTTP/HTTPS) presented to users or added to Wiki pages MUST be verified in the same turn via `read_url_content` (or similar fetch tools) to ensure HTTP 200 status and expected content before outputting. Never output unverified or dead 404 links.
 - **YAML Frontmatter**: Include frontmatter on entity pages (`tags`, `schemas`, `updated`).
 - **Japanese Terminology Standard**: Always use standard Japanese terminology commonly adopted by financial institutions and market participants in Japanese OTC derivative markets. Avoid literal or generic machine translations.
@@ -97,4 +104,3 @@ When adding or compounding knowledge, ALWAYS classify and place files according 
   | **Confirmation** | × コンフィメーション | ○ **コンファーメーション / 約定確認** |
   | **Discrepancy** | × 不一致 | ○ **相違 (Discrepancy) / アンマッチ** |
   | **Derivative** | × 誘導体 | ○ **デリバティブ** |
-

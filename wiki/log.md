@@ -2,6 +2,12 @@
 
 This is an event log tracking all Ingest, Query compounding, and Lint operations performed on the Wiki (ordered reverse-chronologically).
 
+## [2026-08-14] lint | エージェントハーネスの全面強化と Wiki 整合性・用語監査の実施
+- リポジトリ基盤として `CONTEXT.md` および ADR (`docs/adr/0001`〜`0003`) を整備。
+- 標準ライブラリ製ハーネス CLI ツール `scripts/wiki_lint.py`（リンク切れ・未登録ページ・ログ形式・NG用語監査）および `scripts/xsd_query.py`（FpML 5.12 XSD 型/要素/列挙型高速探索）を新規開発。
+- FpML Wiki 運用特化スキル `.agents/skills/fpml-wiki-lint/`, `fpml-compound/`, `fpml-xsd-query/` を配備。
+- `scripts/wiki_lint.py` を実行し、`wiki/index.md`、`wiki/processes/reset-events.md`、`wiki/products/equity.md` の相対リンクおよび表記を修正、全チェック Pass (0 Errors, 0 Warnings) を達成。
+
 ## [2026-08-13] query | xsd:IDREF に設定可能な文字列ルール (W3C NCName 規格) と OK/NG 具体例の解説追記
 - W3C XML Schema Datatypes Sec 3.3.8 `NCName` 規格に基づく `xsd:IDREF` の文字ルール（先頭文字制限、使用可能記号、コロン/空白等の禁止文字）を整理。
 - 設定値の有効 (OK) / 無効 (NG) 判定比較表および XML インスタンス構文スニペットを作成。
