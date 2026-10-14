@@ -2,6 +2,18 @@
 
 This is an event log tracking all Ingest, Query compounding, and Lint operations performed on the Wiki (ordered reverse-chronologically).
 
+## [2026-10-14] query | FX 期間渡し為替予約 (fxFlexibleForward) とヨーロピアン・オプション期間渡し受渡のスキーマ制約・実務表現の整理
+- 日本の為替実務における「期間渡し為替予約 / デリバリー・オプション (Delivery Option Forward / Window Forward)」が、FpML 5.12 において `<fxFlexibleForward>` としてモデル化されている背景および主要要素 (`executionPeriodDates`, `settlementDateOffset`, `forwardRate` 等) を整理。
+- 「ヨーロピアン・オプションの期間渡し（Option on a Flexible Forward）」について、標準 `<fxOption>` スキーマ（`FxEuropeanExercise`）の受渡日が `<valueDate>`（`xsd:date` 固定）に限定され直接定義できないアーキテクチャ上の制約を明示。
+- 権利行使通知（`PhysicalSettlement` による `<fxFlexibleForward>` 派生）や `<genericProduct>`、プライベート拡張による実務上の解法アプローチを分析。
+- サンプルファイル（[`confirmation/products/fx-derivatives/fx-ex27-flexible-term-forward.xml`](../confirmation/products/fx-derivatives/fx-ex27-flexible-term-forward.xml)、[`fx-ex09-euro-opt.xml`](../confirmation/products/fx-derivatives/fx-ex09-euro-opt.xml)、[`fx-ex10-amer-opt.xml`](../confirmation/products/fx-derivatives/fx-ex10-amer-opt.xml)、[`confirmation/business-processes/option-exercise-expiry/msg-exX-exercise-notification-fx-option.xml`](../confirmation/business-processes/option-exercise-expiry/msg-exX-exercise-notification-fx-option.xml)）の参照関係を整備。
+- `wiki/products/fx.md` にセクションを追加・更新。
+
+## [2026-08-14] query | Party クラスの定義場所（EMF コアではなく FpML スキーマ定義）と Ecore メタモデル解決構造の解説
+- `Party` は EMF コアに定義された汎用クラスではなく、FpML スキーマ [`confirmation/fpml-shared-5-12.xsd` L2780](../confirmation/fpml-shared-5-12.xsd#L2780) にて定義された Complex Type であることを整理。
+- EMF コア（`org.eclipse.emf.ecore.EcorePackage`）のメタ概念（`EClass`, `EReference`, `EAttribute` 等）と FpML ドメインモデルの階層関係、および `XSDEcoreBuilder` による動的バインド機構を解説。
+- `wiki/common/shared-foundation.md` Section 4.2.4 を新設し更新。
+
 ## [2026-08-14] lint | エージェントハーネスの全面強化と Wiki 整合性・用語監査の実施
 - リポジトリ基盤として `CONTEXT.md` および ADR (`docs/adr/0001`〜`0003`) を整備。
 - 標準ライブラリ製ハーネス CLI ツール `scripts/wiki_lint.py`（リンク切れ・未登録ページ・ログ形式・NG用語監査）および `scripts/xsd_query.py`（FpML 5.12 XSD 型/要素/列挙型高速探索）を新規開発。

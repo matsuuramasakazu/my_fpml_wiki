@@ -228,12 +228,22 @@ FpML では、同一 XML ドキュメント内でデータ重複を防ぎ構造�
   FpML 標準化委員会は、FpML 4.3 以降のアーキテクチャ仕様改訂において、標準 XML バリデーションに一切の悪影響（非互換）を与えずに強い型情報をスキーマへ付与するため、業界標準の Eclipse Modeling Framework (EMF) の Ecore アノテーション仕様（`ecore:reference`, `ecore:documentRoot`, `ecore:package` 等）を共通基盤スキーマ ([`confirmation/fpml-shared-5-12.xsd` L7](../../confirmation/fpml-shared-5-12.xsd#L7)) に導入することを決定しました。
   - **公式一次情報ソース:** [FpML Official Portal](https://www.fpml.org/) 掲載の FpML Architecture Specifications (AWG Guidelines) および [`confirmation/fpml-shared-5-12.xsd` L7](../../confirmation/fpml-shared-5-12.xsd#L7) ルート属性定義。
 
+#### 4.2.4 `Party` クラスの定義場所（EMF コアではなく FpML スキーマ定義）
+- **EMF コアの役割（メタモデル）:**
+  Eclipse Modeling Framework のコアパッケージ（[`org.eclipse.emf.ecore.EcorePackage`](https://raw.githubusercontent.com/eclipse-emf/org.eclipse.emf/master/plugins/org.eclipse.emf.ecore/src/org/eclipse/emf/ecore/EcorePackage.java)）には、モデルを定義するためのメタ概念（`EClass`, `EReference`, `EAttribute`, `EPackage`, `EDataType` 等）のみが定義されており、`Party` や `Trade` などの金融・業務固有のクラスは存在しません。
+- **`Party` の定義元:**
+  `Party` は FpML 固有の Complex Type であり、[`confirmation/fpml-shared-5-12.xsd` L2780](../../confirmation/fpml-shared-5-12.xsd#L2780)（`<xsd:complexType name="Party">`）にて定義されています。
+- **`ecore:reference="Party"` の解決メカニズム:**
+  EMF の XSD ビルダー（`XSDEcoreBuilder`）がスキーマを読み込む際、同一スキーマ内の `<xsd:complexType name="Party">` から `Party` という `EClass` を生成し、`ecore:reference="Party"` の指示に従って `PartyReference` の参照先型（`eType`）としてその `Party` `EClass` を動的にバインドします。
+
 ### 4.3 一次情報ソース (Official Documentation & Standards - Verified Live)
 - **`xsd:IDREF` 仕様 (W3C)**:
   - [W3C XML Schema Part 2: Datatypes Second Edition (Section 3.3.9 IDREF)](https://www.w3.org/TR/xmlschema-2/#IDREF)
+  - [W3C XML Schema Part 2: Datatypes Second Edition (Section 3.3.8 NCName)](https://www.w3.org/TR/xmlschema-2/#NCName)
   - [W3C XML Schema Definition Language (XSD) 1.1 Part 2: Datatypes (Section 3.3.9 IDREF)](https://www.w3.org/TR/xmlschema11-2/#IDREF)
 - **`ecore` / EMF 仕様 (Eclipse Foundation & FpML)**:
   - [Eclipse Modeling Framework (EMF) Official Project Page](https://eclipse.dev/modeling/emf/)
+  - [Eclipse EMF EcorePackage Official GitHub Source](https://raw.githubusercontent.com/eclipse-emf/org.eclipse.emf/master/plugins/org.eclipse.emf.ecore/src/org/eclipse/emf/ecore/EcorePackage.java)
   - [Eclipse EMF ExtendedMetaData Official GitHub Source & Javadoc](https://raw.githubusercontent.com/eclipse-emf/org.eclipse.emf/master/plugins/org.eclipse.emf.ecore/src/org/eclipse/emf/ecore/util/ExtendedMetaData.java)
   - [FpML Official Portal](https://www.fpml.org/)
 
