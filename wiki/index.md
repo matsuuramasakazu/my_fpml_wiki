@@ -25,7 +25,7 @@ This wiki is continuously compiled and maintained by LLM agents following the Ka
 - [Interest Rate Derivatives (IRD)](./products/ird.md) - 金利スワップ (Swap)、FRA、キャップ/フロア、スワップション等の構造と [`fpml-ird-5-12.xsd`](../confirmation/fpml-ird-5-12.xsd) の解説。
 - [Cross-Currency Swaps (通貨スワップ)](./products/xccy-swap.md) - RFR（USD SOFR vs JPY TONA）ベースの通貨スワップ構造、2レグ `swapStream`、元本交換（Principal Exchange）および元本リセット型（mtMスワップ）の期中 Rate Reset / Fixing イベント表現。
 - [Non-Deliverable Swap (NDS) の期中 Fixing 済みキャッシュフロー表現とイベントモデル](./products/nds-cashflows-and-fixing.md) - NDS の期中 Fixing 済み・支払い未済キャッシュフロー（`fixingDate` / `fixingFxRate`）の表現、および `Business Event` / `TradeChangeAdvice` を用いた 4 つのアプローチの解説。
-- [Foreign Exchange (FX)](./products/fx.md) - FX Spot/Forward, FX Option, FX Swap, Accruals/Targets 構造と [`fpml-fx-5-12.xsd`](../confirmation/fpml-fx-5-12.xsd) 他の解説。
+- [Foreign Exchange (FX)](./products/fx.md) - FX Spot/Forward, FX Option, FX Swap, デジタル・オプション (`fxDigitalOption`) と受渡ペイアウト (`FxOptionPayout`), 期間渡し為替予約 (`fxFlexibleForward`), アジアン・オプション（Average Rate / Average Strike Option: `fxAccrualOption`）、バリア/ウィンドウバリア/ギャップオプション、FX オプション・ストラテジー（Straddle）と構成レグ識別子 (`strategyComponentIdentifier`)、シンセティックフォワード (`SyntheticForward`)、Accruals/Targets 構造と [`fpml-fx-5-12.xsd`](../confirmation/fpml-fx-5-12.xsd) 他の解説。
 - [Credit Derivatives](./products/credit.md) - Credit Default Swap (CDS)、Basket CDS、Credit Event Notice と [`fpml-cd-5-12.xsd`](../confirmation/fpml-cd-5-12.xsd) の解説。
 - [Equity Derivatives](./products/equity.md) - Equity Swap, Equity Option, Forward, Variance Swap と [`fpml-eqd-5-12.xsd`](../confirmation/fpml-eqd-5-12.xsd) の解説。
 

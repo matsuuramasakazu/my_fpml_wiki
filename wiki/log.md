@@ -2,6 +2,47 @@
 
 This is an event log tracking all Ingest, Query compounding, and Lint operations performed on the Wiki (ordered reverse-chronologically).
 
+## [2026-10-17] query | FX シンセティックフォワード (Synthetic Forward) の FpML 表現と公式サンプルの精査
+- `confirmation/products/fx-derivatives/` 配下全 68 ファイルを走査し、`synthetic-forward` という単独ファイル名の公式サンプルは存在しないことを特定。
+- FpML 5.12 Confirmation View において、シンセティックフォワードは `<strategy>`（型: `Strategy`、[`confirmation/fpml-doc-5-12.xsd:1389`](../confirmation/fpml-doc-5-12.xsd)）コンテナを用い、同一満期・同一ストライクの Call レグ（買手: party1）と Put レグ（売手: party1、`buyerPartyReference: party2`）を内包する形でモデル化されるアーキテクチャを解説。
+- プット・コール・パリティ（Put-Call Parity）に基づく満期線形ペイオフ ($\max(S_T-K, 0) - \max(K-S_T, 0) = S_T - K$) およびゼロコスト・フォワードのクオンツ数理を整理。
+- 派生ストラクチャード・フォワード公式サンプル [`confirmation/products/fx-derivatives/fx-ex48-accrual-option-strategy-fading-extra.xml`](../confirmation/products/fx-derivatives/fx-ex48-accrual-option-strategy-fading-extra.xml)（`FadingForwardStrategy`）の参照関係を整理。
+- `wiki/products/fx.md` に新セクションを追加し、`wiki/index.md` を更新。
+
+## [2026-10-17] query | FX オプション・ストラテジー (Straddle) とレグ単位規制識別子 (strategyComponentIdentifier) の解剖
+- 公式サンプル [`confirmation/products/fx-derivatives/fx-ex25-option-strategyComponentIdentifier.xml`](../confirmation/products/fx-derivatives/fx-ex25-option-strategyComponentIdentifier.xml) を精査し、豪ドル／米ドル（AUD/USD）を原資産とするロング・ストラドル（Long Straddle: 同一満期・ストライク 0.5200 の AUD Put / USD Call と AUD Call / USD Put の同時買い）の取引構造、キャッシュフローおよびクオンツ特性（ボラティリティ・Vega買い、ガンマロング）を解説。
+- FpML 5.12 Confirmation View におけるマルチレグ包括コンテナ `<strategy>`（型: `Strategy`、[`confirmation/fpml-doc-5-12.xsd:1389`](../confirmation/fpml-doc-5-12.xsd)）の構造を特定。
+- Dodd-Frank CFTC SDR 報告（USI）および EMIR / 金商法規制報告（UTI）に対応するため、親取引ヘッダーに定義された個別 USI / UTI と各オプションレグ（`component`）を紐付ける `<strategyComponentIdentifier>`（型: `StrategyComponentIdentification`、[`confirmation/fpml-doc-5-12.xsd:1411`](../confirmation/fpml-doc-5-12.xsd)）のアーキテクチャおよび実務上の役割を整理。
+- 満期純損益算式 ($\text{Net P\&L} = |S_T - 0.5200| \times 50\text{M} - 52,000$)、V字ペイオフダイアグラム、および満期スポット相場水準別の損益シナリオ分析を追記。
+- `wiki/products/fx.md` に新セクションを追加し、`wiki/index.md` を更新。
+
+## [2026-10-14] query | dataDocument による行使後ペイアウト単体の表現可否と bulletPayment によるモデル化
+- `<dataDocument>` 直下への `<payout>` / `<payment>` / `<optionExercise>` 直接配置はスキーマ違反（`DataDocument` 型は `<trade>` および `<portfolio>` のみを許容）であることを特定。
+- 静的データ連携（EOD ポジション、決済元帳連携等）として行使後の単一キャッシュ受渡（片道キャッシュフロー）を `<dataDocument>` で保持する場合、FpML 5.12 では `<bulletPayment>`（型: `BulletPayment`、[`confirmation/fpml-ird-5-12.xsd:31`](../confirmation/fpml-ird-5-12.xsd)）を `<trade>` 配下に格納するのが標準プラクティスであることを整理。
+- 公式サンプル [`confirmation/products/interest-rate-derivatives/ird-ex28-bullet-payments.xml`](../confirmation/products/interest-rate-derivatives/ird-ex28-bullet-payments.xml) の構造、および業務メッセージ（`<executionNotification>` + `<optionExercise>`）とのアーキテクチャ上の責務分離を解説。
+- `wiki/products/fx.md` に Section 4 を追記。
+
+## [2026-10-14] query | FX デジタル・オプション (fxDigitalOption) の受渡ペイアウト (FxOptionPayout) 表現とプロダクトサンプルの特定
+- FX デジタル・オプション（バイナリー・オプション、ワンタッチ、ノータッチ等）において、権利行使／トリガー条件充足時に受け渡される確定金額ペイアウトが `<fxDigitalOption>` 配下の `<payout>` 要素（型: `FxOptionPayout`、[`confirmation/fpml-fx-5-12.xsd:414`](../confirmation/fpml-fx-5-12.xsd)）としてネイティブに表現可能であることを特定。
+- `FxOptionPayout` の構造（基底型 `NonNegativeMoney` / `MoneyBase`、`<currency>`, `<amount>`, `<payoutStyle>`: `Immediate` / `Deferred`, `<settlementInformation>`）およびオプション買い手・売り手間の受払関係（ISDA 慣行）を整理。
+- 公式プロダクトサンプル XML 6種（`fx-ex14` EuroBinary, `fx-ex15` EuroRangeBinary, `fx-ex16` OneTouch, `fx-ex17` NoTouch, `fx-ex18` DoubleOneTouch, `fx-ex19` DoubleNoTouch）およびアクルーアル型デジタル（`fx-ex57`）の定義内容を網羅的に解析。
+- 権利行使後のポストトレード・ライフサイクル（実際の資金受渡通知）におけるビジネスイベント `<optionExercise>`（`settlementType` = Cash, `<payment>`）の表現連携を解説。
+- `wiki/products/fx.md` および `wiki/index.md` を更新。
+
+## [2026-10-14] query | FX ウィンドウバリア、ギャップ、バリアギャップ、ウィンドウバリアギャップオプションの FpML 表現とサンプルの整理
+- ウィンドウバリア・オプションについて、`<fxOption>` 配下 `<features><barrier>`（型: `FxBarrierFeature`、[`confirmation/fpml-fx-5-12.xsd`](../confirmation/fpml-fx-5-12.xsd)）の `<observationStartDate>` / `<observationEndDate>` による観測窓指定でネイティブに表現可能であることを特定。
+- ギャップ・オプションについて、単一タグが存在しない理由と、① 満期判定 European Knock-in Barrier（Strike=$K_2$, Trigger=$K_1$）による単一 `<fxOption>` 表現、② バニラ＋デジタルのマルチレグ合成（`<strategy>`）表現の2つの実務手法をクオンツ数理分解とともに解説。
+- バリアギャップ・オプションおよびウィンドウバリアギャップ・オプションのマルチレグ戦略（Strategy）によるモデリング手法を整理。
+- 公式サンプルファイル（`fx-ex12`、`fx-ex13` 等の全期間バリアサンプルの存在と、ギャップオプション等の専用サンプルの非存在）の所在を特定。
+- `wiki/products/fx.md` にセクションを追加し更新。
+
+## [2026-10-14] query | FX アベレージ・ストライク・オプション (Average Strike Option) の FpML 表現とプロダクトサンプルの特定
+- アジアン・オプションにおける Average Rate Option (ARO: 平均レート・オプション) と Average Strike Option (ASO: 平均行使価格オプション) の実務・金融工学的差異を整理。
+- FpML 5.12 Confirmation View において、ASO をネイティブにモデル化する標準プロダクトが `<fxAccrualOption>`（型: `FxAccrualOption`、`averageStrike` 要素、型: `FxAverageStrike`、[`confirmation/fpml-fx-accruals-5-12.xsd`](../confirmation/fpml-fx-accruals-5-12.xsd)）であることを特定。固定行使価格（`strike`）と平均行使価格（`averageStrike`）の `xsd:choice` 排他選択構造を解説。
+- バニラ `<fxOption>` 配下の `<features><asian>`（型: `FxAsianFeature`、[`confirmation/fpml-fx-5-12.xsd`](../confirmation/fpml-fx-5-12.xsd)）が、スキーマ上 `<strike>`（固定レート）を必須とするため実質的に ARO 特化であるアーキテクチャ上の制約を比較。
+- ドンピシャの公式サンプル [`confirmation/products/fx-derivatives/fx-ex55-accrual-option-average-strike.xml`](../confirmation/products/fx-derivatives/fx-ex55-accrual-option-average-strike.xml) および関連平均型オプションサンプル（`fx-ex56`、`fx-ex20`、`fx-ex21`、`fx-ex22`）の構造を網羅的に解析。
+- `wiki/products/fx.md` にセクションを追加し更新。
+
 ## [2026-10-14] query | FX 期間渡し為替予約 (fxFlexibleForward) とヨーロピアン・オプション期間渡し受渡のスキーマ制約・実務表現の整理
 - 日本の為替実務における「期間渡し為替予約 / デリバリー・オプション (Delivery Option Forward / Window Forward)」が、FpML 5.12 において `<fxFlexibleForward>` としてモデル化されている背景および主要要素 (`executionPeriodDates`, `settlementDateOffset`, `forwardRate` 等) を整理。
 - 「ヨーロピアン・オプションの期間渡し（Option on a Flexible Forward）」について、標準 `<fxOption>` スキーマ（`FxEuropeanExercise`）の受渡日が `<valueDate>`（`xsd:date` 固定）に限定され直接定義できないアーキテクチャ上の制約を明示。
